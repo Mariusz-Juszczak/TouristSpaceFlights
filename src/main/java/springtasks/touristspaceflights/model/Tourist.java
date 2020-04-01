@@ -1,11 +1,14 @@
 package springtasks.touristspaceflights.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+
 
 @Entity
 public class Tourist {
@@ -21,7 +24,11 @@ public class Tourist {
     private String notes;
     private LocalDate dateOfBirth;
 
-    @OneToMany
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToMany
     private List<Flight> flightsList;
 
     public Tourist() {

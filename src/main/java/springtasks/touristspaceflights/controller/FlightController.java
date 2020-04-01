@@ -19,7 +19,7 @@ public class FlightController {
     private FlightsRepo flightsRepo;
 
     @Autowired
-    public FlightController (TouristsRepo touristsRepo, FlightsRepo flightsRepo) {
+    public FlightController(TouristsRepo touristsRepo, FlightsRepo flightsRepo) {
         this.touristsRepo = touristsRepo;
         this.flightsRepo = flightsRepo;
     }
@@ -42,10 +42,8 @@ public class FlightController {
 
     @PutMapping("/flights/{id}")
     public void changeFlight(
-            @PathVariable ("id") Optional<Long> id, @RequestBody Flight flight) {
+            @PathVariable("id") Optional<Long> id, @RequestBody Flight flight) {
         if (id.isPresent()) {
-            Flight tempFlight = flightsRepo.findById(id.get()).get();
-            tempFlight = flight;
             flight.setId(id.get());
             flightsRepo.save(flight);
         }
@@ -53,21 +51,46 @@ public class FlightController {
 
     @PatchMapping("/flights/{id}")
     public void changeFlightSettings(
-            @PathVariable ("id") Optional<Long> id, @RequestParam ("departureDateTime") Optional<LocalDateTime> departureDateTime, @RequestParam ("arrivalDateTime") Optional<LocalDateTime> arrivalDateTime, @RequestParam ("freeSeats") Optional<Integer> freeSeats , @RequestParam ("ticketPrice") Optional<Double> ticketPrice, @RequestParam ("touristsList") Optional<List<Tourist>> touristList) {
+            @PathVariable("id") Optional<Long> id, @RequestParam("departureDateTime") Optional<LocalDateTime> departureDateTime,
+            @RequestParam("arrivalDateTime") Optional<LocalDateTime> arrivalDateTime, @RequestParam("freeSeats") Optional<Integer> freeSeats,
+            @RequestParam("ticketPrice") Optional<Double> ticketPrice, @RequestBody Optional<List<Long>> touristsIdList) {
         if (id.isPresent()) {
-            Flight editedFlight = flightsRepo.findById(id.get()).get(); {
-                if (departureDateTime.isPresent()) { editedFlight.setDepartureDateTime(departureDateTime.get()); }
-                if (arrivalDateTime.isPresent()) { editedFlight.setArrivalDateTime(arrivalDateTime.get()); }
-                if (freeSeats.isPresent()) { editedFlight.setFreeSeats(freeSeats.get()); }
-                if (ticketPrice.isPresent()) { editedFlight.setTicketPrice(ticketPrice.get()); }
-                if (touristList.isPresent()) { editedFlight.setTouristList(touristList.get()); }
-            } flightsRepo.save(editedFlight);
+            Flight editedFlight = flightsRepo.findById(id.get()).get();
+            {
+                if (departureDateTime.isPresent()) {
+                    editedFlight.setDepartureDateTime(departureDateTime.get());
+                }
+                if (arrivalDateTime.isPresent()) {
+                    editedFlight.setArrivalDateTime(arrivalDateTime.get());
+                }
+                if (freeSeats.isPresent()) {
+                    editedFlight.setFreeSeats(freeSeats.get());
+                }
+                if (ticketPrice.isPresent()) {
+                    editedFlight.setTicketPrice(ticketPrice.get());
+                }
+                if (touristsIdList.isPresent()) {
+                    for (int i = 0; i < editedFlight.getTouristsList().size(); i++) {
+                        Tourist tempTourist = touristsRepo.findById(editedFlight.getTouristsList().get(i).getId()).get();
+                        tempTourist.getFlightsList().remove(editedFlight);
+                        touristsRepo.save(tempTourist);
+                    }
+                    editedFlight.getTouristsList().clear();
+                    for (int i = 0; i < touristsIdList.get().size(); i++) {
+                        Tourist tempTourist = touristsRepo.findById(touristsIdList.get().get(i)).get();
+                        editedFlight.getTouristsList().add(tempTourist);
+                        tempTourist.getFlightsList().add(editedFlight);
+                        touristsRepo.save(tempTourist);
+                    }
+                }
+                flightsRepo.save(editedFlight);
+            }
         }
     }
 
     @DeleteMapping("/flights/{id}")
     public void deleteFlight(
-            @PathVariable("id") Optional<Long>  id) {
+            @PathVariable("id") Optional<Long> id) {
         if (id.isPresent()) {
             flightsRepo.deleteById(id.get());
         }

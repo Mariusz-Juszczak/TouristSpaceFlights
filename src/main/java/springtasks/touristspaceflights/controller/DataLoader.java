@@ -30,11 +30,10 @@ public class DataLoader implements ApplicationRunner {
     public void run(ApplicationArguments args) {
 
         List<Tourist> touristList = new ArrayList<>();
-        Tourist tourist0 = new Tourist("Andrzej", "Dębowy", "mężczyzna", "PL", "nie lubi brata", LocalDate.of(1995, 11, 23), null);
-        touristList.add(tourist0);
-
         List<Flight> flightList = new ArrayList<>();
-        Flight flight0 = new Flight(LocalDateTime.of(2020, 05 , 30, 18, 12), LocalDateTime.of(2020, 06, 01, 5, 00), 120, 10.50, touristList);
+        Tourist tourist0 = new Tourist("John", "Kowalsky", "male", "PL", "-", LocalDate.of(1995, 11, 23), flightList );
+
+        Flight flight0 = new Flight(LocalDateTime.of(2020, 5 , 30, 18, 12), LocalDateTime.of(2020, 6, 1, 5, 0), 120, 10.50, touristList );
 
         touristsRepo.save(tourist0);
         flightsRepo.save(flight0);

@@ -1,11 +1,13 @@
 package springtasks.touristspaceflights.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Entity
 public class Flight {
@@ -19,18 +21,22 @@ public class Flight {
     private int freeSeats;
     private double ticketPrice;
 
-    @OneToMany
-    private List<Tourist> touristList;
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToMany
+    private List<Tourist> touristsList;
 
     public Flight() {
     }
 
-    public Flight(LocalDateTime departureDateTime, LocalDateTime arrivalDateTime, int freeSeats, double ticketPrice, List<Tourist> touristList) {
+    public Flight(LocalDateTime departureDateTime, LocalDateTime arrivalDateTime, int freeSeats, double ticketPrice, List<Tourist> touristsList) {
         this.departureDateTime = departureDateTime;
         this.arrivalDateTime = arrivalDateTime;
         this.freeSeats = freeSeats;
         this.ticketPrice = ticketPrice;
-        this.touristList = touristList;
+        this.touristsList = touristsList;
     }
 
     public Long getId() {
@@ -73,11 +79,11 @@ public class Flight {
         this.ticketPrice = ticketPrice;
     }
 
-    public List<Tourist> getTouristList() {
-        return touristList;
+    public List<Tourist> getTouristsList() {
+        return touristsList;
     }
 
-    public void setTouristList(List<Tourist> touristList) {
-        this.touristList = touristList;
+    public void setTouristsList(List<Tourist> touristsList) {
+        this.touristsList = touristsList;
     }
 }
